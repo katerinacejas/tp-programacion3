@@ -1,7 +1,7 @@
 import time
 
 # Definimos el tamaño del tablero
-N = 8  # Cambia este valor para tableros de diferentes tamaños
+N = 7  # Cambia este valor para tableros de diferentes tamaños
 
 # Movimientos posibles del caballo
 movimientos_x = [2, 1, -1, -2, -2, -1, 1, 2]
@@ -65,7 +65,7 @@ def resolver_recorrido_caballo(x, y, movimiento):
     return False
 
 # Posición inicial del caballo (personalizable)
-x_inicial, y_inicial = 1, 1  # Cambia estas coordenadas según sea necesario
+x_inicial, y_inicial = 2, 0  # Cambia estas coordenadas según sea necesario
 tablero[x_inicial][y_inicial] = 0  # Marcamos la posición inicial
 
 # Iniciar timers
