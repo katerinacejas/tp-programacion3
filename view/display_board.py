@@ -32,3 +32,4 @@ if __name__ == "__main__":
     knight_path=[(0,0),(-1,-2),(0,-4)]
     knight_tour_visualizer = KnightTourVisualizer(board_size,knight_path)
     plt.show()
+
