@@ -58,12 +58,10 @@ def generar_tablero(N):
                         tablero[i][j] = valor_interno
     return tablero
 
+def contar_ceros(tablero):
+    ceros = sum(fila.count(0) for fila in tablero)
+    return ceros > 0
 
-# Función para verificar si una posición (x, y) está dentro del tablero y no ha sido visitada
-def es_movimiento_valido(x, y):
-    return 0 <= x < N and 0 <= y < N and tablero[x][y] < 0
-
-# Función para contar los movimientos posibles desde una posición (x, y)
 def contar_movimientos_posibles(x, y):
     conteo = 0
     for i in range(8):
@@ -73,48 +71,24 @@ def contar_movimientos_posibles(x, y):
             conteo += 1
     return conteo
 
+# Verificar si el movimiento es válido
+def es_movimiento_valido(x, y):
+    return 0 <= x < N and 0 <= y < N and tablero[x][y] < 0
+
 def actualizar_return(x, y):
-    if 0 <= x < N and 0 <= y < N:
+    if 0 <= x < N and 0 <= y < N and tablero[x][y] < 0:
         for a in range(8):
             nuevo_x_temp = x + movimientos_x[a]
             nuevo_y_temp = y + movimientos_y[a]
             if 0 <= nuevo_x_temp < N and 0 <= nuevo_y_temp < N and tablero[nuevo_x_temp][nuevo_y_temp] < 0:
                 tablero[nuevo_x_temp][nuevo_y_temp] += 1
 
-def devolver_valores(x, y):
-    if 0 <= x < N and 0 <= y < N and tablero[x][y] > 0:
-        for a in range(8):
-            nuevo_x_temp = x + movimientos_x[a]
-            nuevo_y_temp = y + movimientos_y[a]
-            if 0 <= nuevo_x_temp < N and 0 <= nuevo_y_temp < N and tablero[nuevo_x_temp][nuevo_y_temp] <= 0 :
-                tablero[nuevo_x_temp][nuevo_y_temp] -= 1
-
-
-# Función para imprimir el tablero celda por celda en el orden de recorrido
-def imprimir_tablero_paso_a_paso():
-    print("\nRecorrido final del tablero:")
-    posiciones_ordenadas = sorted(
-        [(i, j, tablero[i][j]) for i in range(N) for j in range(N)],
-        key=lambda x: x[2]
-    )
-    for _, _, movimiento in posiciones_ordenadas:
-        for i in range(N):
-            for j in range(N):
-                if tablero[i][j] <= movimiento and tablero[i][j] != -1:
-                    print(f"{tablero[i][j]:2}", end=" ")
-                else:
-                    print(" . ", end=" ")
-            print()
-        print("\n" + "-" * (3 * N))
-        time.sleep(0.2)
-
-
-# Función recursiva de Branch & Bound con la heurística de Warnsdorff
+# Función recursiva de Backtracking
 def resolver_recorrido_caballo(x, y, movimiento):
-    global total_pasos
-    total_pasos += 1  # Incrementamos el contador de pasos
-
-    if movimiento == (N * N) + 1:
+    global total_pasos, tablero
+    total_pasos += 1
+    if movimiento == (N * N)+1:
+        print("Salio por acá.")
         return True
 
     # Generar todos los movimientos válidos desde (x, y) y ordenarlos usando la heurística
@@ -123,48 +97,55 @@ def resolver_recorrido_caballo(x, y, movimiento):
         nuevo_x = x + movimientos_x[i]
         nuevo_y = y + movimientos_y[i]
         if es_movimiento_valido(nuevo_x, nuevo_y):
-            # Contar los movimientos futuros posibles desde la nueva posición
             movimientos_posibles.append((contar_movimientos_posibles(nuevo_x, nuevo_y), nuevo_x, nuevo_y))
 
     # Ordenamos los movimientos posibles por el número de opciones futuras (heurística de Warnsdorff)
     movimientos_posibles.sort()  # Menor cantidad de opciones primero
-
     # Intentar cada movimiento en el orden determinado por la heurística
     for _, nuevo_x, nuevo_y in movimientos_posibles:
-        guardarPosicion = tablero[nuevo_x][nuevo_y]
+        recorrido.append([(x, y), (nuevo_x, nuevo_y)])
+        tablerotemp = [fila[:] for fila in tablero]
         tablero[nuevo_x][nuevo_y] = movimiento  # Marcamos la posición con el número del movimiento
         actualizar_return(nuevo_x,nuevo_y)
+        if(contar_ceros(tablero)):
+            tablero = [fila[:] for fila in tablerotemp]
+            recorrido.pop()
+            continue
         if resolver_recorrido_caballo(nuevo_x, nuevo_y, movimiento + 1):
             return True
 
         # Backtracking: desmarcar la casilla
-        devolver_valores(nuevo_x,nuevo_y)
-        tablero[nuevo_x][nuevo_y] = guardarPosicion
-
+        #tablero = [fila[:] for fila in tablerotemp]
     return False
 
+# Imprimir el tablero
 def imprimir_tablero():
     for fila in tablero:
         print(' '.join(f'{x:2}' for x in fila))
     print()
 
+
 # Configuración inicial
-tablero=generar_tablero(N)
-tablero[x_inicial][y_inicial] = 1  # Marcamos el valor de la posición inicial
+tablero = generar_tablero(N)
+tablero[x_inicial][y_inicial] = 1
+recorrido = []
 
-# Iniciar timers
+actualizar_return(x_inicial,y_inicial)
+# Ejecución y medición de tiempo
 start_time = time.time()
+imprimir_tablero()
 
-# Llamada a la función
-if resolver_recorrido_caballo(x_inicial, y_inicial, 2):
-    solution_time = time.time() - start_time  # Tiempo hasta encontrar la solución
-    # imprimir_tablero_paso_a_paso()
+if resolver_recorrido_caballo(x_inicial, y_inicial, tablero[x_inicial][y_inicial] + 1):
+    solution_time = time.time() - start_time
+    print("Se encontró un recorrido válido.")
     imprimir_tablero()
+    print(f"Este es el recorrido: {recorrido}" )
 else:
+    solution_time = time.time() - start_time
     imprimir_tablero()
     print("No se encontró un recorrido válido.")
 
-# Tiempo total de ejecución
+# Resultados de tiempo
 total_time = time.time() - start_time
 print(f"\nTiempo hasta encontrar la solución: {solution_time:.4f} segundos")
 print(f"Tiempo total de ejecución: {total_time:.4f} segundos")
