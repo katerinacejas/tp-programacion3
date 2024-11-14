@@ -1,7 +1,17 @@
 import time
 
-from Back8 import actualizarReturn
+# Definimos el tamaño del tablero
+N = 8  # Cambia este valor para tableros de diferentes tamaños
 
+# Posición inicial del caballo
+x_inicial, y_inicial = 2, 0  # Cambia estas coordenadas según sea necesario
+
+# Movimientos posibles del caballo
+movimientos_x = [2, 1, -1, -2, -2, -1, 1, 2]
+movimientos_y = [1, 2, 2, 1, -1, -2, -2, -1]
+
+# Contador de pasos
+total_pasos = 0
 
 # Función para generar el tablero con los valores específicos
 def generar_tablero(N):
@@ -48,17 +58,6 @@ def generar_tablero(N):
                         tablero[i][j] = valor_interno
     return tablero
 
-# Definimos el tamaño del tablero
-N = 5  # Cambia este valor para tableros de diferentes tamaños
-
-tablero=generar_tablero(N)
-
-# Movimientos posibles del caballo
-movimientos_x = [2, 1, -1, -2, -2, -1, 1, 2]
-movimientos_y = [1, 2, 2, 1, -1, -2, -2, -1]
-
-# Contador de pasos
-total_pasos = 0
 
 # Función para verificar si una posición (x, y) está dentro del tablero y no ha sido visitada
 def es_movimiento_valido(x, y):
@@ -89,7 +88,7 @@ def devolver_valores(x, y):
             nuevo_y_temp = y + movimientos_y[a]
             if 0 <= nuevo_x_temp < N and 0 <= nuevo_y_temp < N and tablero[nuevo_x_temp][nuevo_y_temp] <= 0 :
                 tablero[nuevo_x_temp][nuevo_y_temp] -= 1
-    #return False
+
 
 # Función para imprimir el tablero celda por celda en el orden de recorrido
 def imprimir_tablero_paso_a_paso():
@@ -115,7 +114,7 @@ def resolver_recorrido_caballo(x, y, movimiento):
     global total_pasos
     total_pasos += 1  # Incrementamos el contador de pasos
 
-    if movimiento == N * N:
+    if movimiento == (N * N) + 1:
         return True
 
     # Generar todos los movimientos válidos desde (x, y) y ordenarlos usando la heurística
@@ -130,7 +129,6 @@ def resolver_recorrido_caballo(x, y, movimiento):
     # Ordenamos los movimientos posibles por el número de opciones futuras (heurística de Warnsdorff)
     movimientos_posibles.sort()  # Menor cantidad de opciones primero
 
-    imprimir_tablero()
     # Intentar cada movimiento en el orden determinado por la heurística
     for _, nuevo_x, nuevo_y in movimientos_posibles:
         guardarPosicion = tablero[nuevo_x][nuevo_y]
@@ -150,9 +148,9 @@ def imprimir_tablero():
         print(' '.join(f'{x:2}' for x in fila))
     print()
 
-# Posición inicial del caballo (personalizable)
-x_inicial, y_inicial = 2, 0  # Cambia estas coordenadas según sea necesario
-tablero[x_inicial][y_inicial] = 1  # Marcamos la posición inicial
+# Configuración inicial
+tablero=generar_tablero(N)
+tablero[x_inicial][y_inicial] = 1  # Marcamos el valor de la posición inicial
 
 # Iniciar timers
 start_time = time.time()
