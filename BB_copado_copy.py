@@ -1,17 +1,10 @@
 import time
 
 # Definimos el tamaño del tablero
-N = 7  # Cambia este valor para tableros de diferentes tamaños
+N = 8  # Cambia este valor para tableros de diferentes tamaños
 
 # Posición inicial del caballo
-x_inicial, y_inicial = 0, 0 # Cambia estas coordenadas según sea necesario
-
-# Movimientos posibles del caballo
-movimientos_x = [2, 1, -1, -2, -2, -1, 1, 2]
-movimientos_y = [1, 2, 2, 1, -1, -2, -2, -1]
-
-# Variables de ejecución
-total_pasos = 0
+x_inicial, y_inicial = 2, 0  # Cambia estas coordenadas según sea necesario
 
 # Función para generar el tablero con los valores específicos
 def generar_tablero(N):
@@ -58,24 +51,39 @@ def generar_tablero(N):
                         tablero[i][j] = valor_interno
     return tablero
 
-# Verificar si el movimiento es válido
-def es_movimiento_valido(x, y):
-    return 0 <= x < N and 0 <= y < N and tablero[x][y] < 0
+# Movimientos posibles del caballo
+movimientos_x = [2, 1, -1, -2, -2, -1, 1, 2]
+movimientos_y = [1, 2, 2, 1, -1, -2, -2, -1]
+
+# Variables de ejecución
+total_pasos = 0
 
 def contar_ceros(tablero):
     ceros = sum(fila.count(0) for fila in tablero)
     return ceros > 1
 
-def contar_movimientos_posibles(x, y, tablero):
+def contar_movimientos_posibles(x, y):
     conteo = 0
     for i in range(8):
         nuevo_x = x + movimientos_x[i]
         nuevo_y = y + movimientos_y[i]
         if es_movimiento_valido(nuevo_x, nuevo_y):
             conteo += 1
-    tablero[x][y] = tablero[x][y] + conteo
+    return conteo
+
+# Verificar si el movimiento es válido
+def es_movimiento_valido(x, y):
+    return 0 <= x < N and 0 <= y < N and tablero[x][y] < 0
 
 def actualizar_return(x, y):
+    if 0 <= x < N and 0 <= y < N and tablero[x][y] < 0:
+        for a in range(8):
+            nuevo_x_temp = x + movimientos_x[a]
+            nuevo_y_temp = y + movimientos_y[a]
+            if 0 <= nuevo_x_temp < N and 0 <= nuevo_y_temp < N and tablero[nuevo_x_temp][nuevo_y_temp] < 0:
+                tablero[nuevo_x_temp][nuevo_y_temp] += 1
+
+def actualizar_return2(x, y, tablero):
     if 0 <= x < N and 0 <= y < N:
         for a in range(8):
             nuevo_x_temp = x + movimientos_x[a]
@@ -83,35 +91,40 @@ def actualizar_return(x, y):
             if 0 <= nuevo_x_temp < N and 0 <= nuevo_y_temp < N and tablero[nuevo_x_temp][nuevo_y_temp] < 0:
                 tablero[nuevo_x_temp][nuevo_y_temp] += 1
 
-
 # Función recursiva de Backtracking
 def resolver_recorrido_caballo(x, y, movimiento, tablero):
     global total_pasos
-    total_pasos += 1  # Incrementamos el contador de pasos
-
-    # Si el caballo ha visitado todas las casillas, hemos terminado
-    if movimiento == N * N:
+    total_pasos += 1
+    if movimiento == (N * N)+1:
+        print("Salio por acá.")
         return True
 
-    # Intentamos cada uno de los 8 posibles movimientos
+    # Generar todos los movimientos válidos desde (x, y) y ordenarlos usando la heurística
+    movimientos_posibles = []
     for i in range(8):
         nuevo_x = x + movimientos_x[i]
         nuevo_y = y + movimientos_y[i]
-
         if es_movimiento_valido(nuevo_x, nuevo_y):
-            tablerotemp = [fila[:] for fila in tablero]
-            tablero[nuevo_x][nuevo_y] = movimiento  # Marcamos la posición con el número del movimiento
-            contar_movimientos_posibles(nuevo_x,nuevo_y,tablero)
-            if(contar_ceros(tablero)):
-                flag = flag + 1
-                continue
-            if resolver_recorrido_caballo(nuevo_x, nuevo_y, movimiento + 1, tablero):
-                return True
+            movimientos_posibles.append((contar_movimientos_posibles(nuevo_x, nuevo_y), nuevo_x, nuevo_y))
 
-            # Backtracking: desmarcar la casilla
-            #tablero[nuevo_x][nuevo_y] = valorPrevio
+    # Ordenamos los movimientos posibles por el número de opciones futuras (heurística de Warnsdorff)
+    movimientos_posibles.sort()  # Menor cantidad de opciones primero
+    # Intentar cada movimiento en el orden determinado por la heurística
+    for _, nuevo_x, nuevo_y in movimientos_posibles:
+        #valorPrevio = tablero[nuevo_x][nuevo_y]
+        tablerotemp = [fila[:] for fila in tablero]
+        tablero[nuevo_x][nuevo_y] = movimiento  # Marcamos la posición con el número del movimiento
+        #actualizar_return2(nuevo_x,nuevo_y,tablero)
+        actualizar_return(nuevo_x,nuevo_y)
+        if(contar_ceros(tablero)):
             tablero = [fila[:] for fila in tablerotemp]
+            continue
+        if resolver_recorrido_caballo(nuevo_x, nuevo_y, movimiento + 1, tablero):
+            return True
 
+        # Backtracking: desmarcar la casilla
+        #tablero[nuevo_x][nuevo_y] = valorPrevio
+        #tablero = [fila[:] for fila in tablerotemp]
     return False
 
 # Imprimir el tablero
@@ -125,13 +138,15 @@ def imprimir_tablero():
 tablero = generar_tablero(N)
 tablero[x_inicial][y_inicial] = 1
 
+imprimir_tablero()
+
+actualizar_return(x_inicial,y_inicial)
 # Ejecución y medición de tiempo
 start_time = time.time()
-actualizar_return(x_inicial,y_inicial)
+imprimir_tablero()
 
 if resolver_recorrido_caballo(x_inicial, y_inicial, tablero[x_inicial][y_inicial] + 1, tablero):
     solution_time = time.time() - start_time
-    print("Se encontró un recorrido válido.")
     imprimir_tablero()
 else:
     solution_time = time.time() - start_time

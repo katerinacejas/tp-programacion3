@@ -1,14 +1,14 @@
 import time
 
 # Definimos el tamaño del tablero
-N = 8  # Cambia este valor para tableros de diferentes tamaños
+N = 10  # Cambia este valor para tableros de diferentes tamaños
+
+# Posición inicial del caballo
+x_inicial, y_inicial = 0, 0  # Cambia estas coordenadas según sea necesario
 
 # Movimientos posibles del caballo
 movimientos_x = [2, 1, -1, -2, -2, -1, 1, 2]
 movimientos_y = [1, 2, 2, 1, -1, -2, -2, -1]
-
-# Inicializamos el tablero con -1 para marcar que ninguna posición ha sido visitada
-tablero = [[-1 for _ in range(N)] for _ in range(N)]
 
 # Contador de pasos
 total_pasos = 0
@@ -51,6 +51,7 @@ def resolver_recorrido_caballo(x, y, movimiento):
     total_pasos += 1  # Incrementamos el contador de pasos
 
     if movimiento == N * N:
+        print("Salio por acá.")
         return True
 
     # Generar todos los movimientos válidos desde (x, y) y ordenarlos usando la heurística
@@ -64,7 +65,6 @@ def resolver_recorrido_caballo(x, y, movimiento):
 
     # Ordenamos los movimientos posibles por el número de opciones futuras (heurística de Warnsdorff)
     movimientos_posibles.sort()  # Menor cantidad de opciones primero
-
     # Intentar cada movimiento en el orden determinado por la heurística
     for _, nuevo_x, nuevo_y in movimientos_posibles:
         tablero[nuevo_x][nuevo_y] = movimiento  # Marcamos la posición con el número del movimiento
@@ -77,8 +77,13 @@ def resolver_recorrido_caballo(x, y, movimiento):
 
     return False
 
-# Posición inicial del caballo (personalizable)
-x_inicial, y_inicial = 1, 2  # Cambia estas coordenadas según sea necesario
+def imprimir_tablero():
+    for fila in tablero:
+        print(' '.join(f'{x:2}' for x in fila))
+    print()
+
+# Inicializamos el tablero con -1 para marcar que ninguna posición ha sido visitada
+tablero = [[-1 for _ in range(N)] for _ in range(N)]
 tablero[x_inicial][y_inicial] = 0  # Marcamos la posición inicial
 
 # Iniciar timers
@@ -87,8 +92,10 @@ start_time = time.time()
 # Llamada a la función
 if resolver_recorrido_caballo(x_inicial, y_inicial, 1):
     solution_time = time.time() - start_time  # Tiempo hasta encontrar la solución
-    # imprimir_tablero_paso_a_paso()
+    print("Se encontró un recorrido válido.")
+    imprimir_tablero()
 else:
+    imprimir_tablero()
     print("No se encontró un recorrido válido.")
 
 # Tiempo total de ejecución

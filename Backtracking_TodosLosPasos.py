@@ -3,12 +3,12 @@ import time
 # Definimos el tamaño del tablero
 N = 8  # Cambia este valor para tableros de diferentes tamaños
 
+# Posición inicial del caballo (personalizable)
+x_inicial, y_inicial = 0, 0  # Cambia estas coordenadas según sea necesario
+
 # Movimientos posibles del caballo
 movimientos_x = [2, 1, -1, -2, -2, -1, 1, 2]
 movimientos_y = [1, 2, 2, 1, -1, -2, -2, -1]
-
-# Inicializamos el tablero con -1 para marcar que ninguna posición ha sido visitada
-tablero = [[-1 for _ in range(N)] for _ in range(N)]
 
 # Función para verificar si una posición (x, y) está dentro del tablero y no ha sido visitada
 def es_movimiento_valido(x, y):
@@ -45,8 +45,8 @@ def resolver_recorrido_caballo(x, y, movimiento):
 
     return False
 
-# Posición inicial del caballo (personalizable)
-x_inicial, y_inicial = 0, 0  # Cambia estas coordenadas según sea necesario
+# Inicializamos el tablero con -1 para marcar que ninguna posición ha sido visitada
+tablero = [[-1 for _ in range(N)] for _ in range(N)]
 tablero[x_inicial][y_inicial] = 0  # Marcamos la posición inicial
 
 # Llamada a la función
