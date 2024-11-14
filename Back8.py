@@ -1,5 +1,18 @@
 import time
 
+# Definimos el tamaño del tablero
+N = 7  # Cambia este valor para tableros de diferentes tamaños
+
+# Posición inicial del caballo
+x_inicial, y_inicial = 0, 0 # Cambia estas coordenadas según sea necesario
+
+# Movimientos posibles del caballo
+movimientos_x = [2, 1, -1, -2, -2, -1, 1, 2]
+movimientos_y = [1, 2, 2, 1, -1, -2, -2, -1]
+
+# Variables de ejecución
+total_pasos = 0
+
 # Función para generar el tablero con los valores específicos
 def generar_tablero(N):
     tablero = [[0] * N for _ in range(N)]
@@ -45,15 +58,6 @@ def generar_tablero(N):
                         tablero[i][j] = valor_interno
     return tablero
 
-# Movimientos posibles del caballo
-movimientos_x = [2, 1, -1, -2, -2, -1, 1, 2]
-movimientos_y = [1, 2, 2, 1, -1, -2, -2, -1]
-
-# Variables de ejecución
-total_pasos = 0
-contador = 0
-N = 7  # Tamaño del tablero
-
 # Verificar si el movimiento es válido
 def es_movimiento_valido(x, y):
     return 0 <= x < N and 0 <= y < N and tablero[x][y] < 0
@@ -71,14 +75,14 @@ def contar_movimientos_posibles(x, y, tablero):
             conteo += 1
     tablero[x][y] = tablero[x][y] + conteo
 
-def actualizar1erPosicionReturn(x, y):
+def actualizar_return(x, y):
     if 0 <= x < N and 0 <= y < N:
         for a in range(8):
             nuevo_x_temp = x + movimientos_x[a]
             nuevo_y_temp = y + movimientos_y[a]
             if 0 <= nuevo_x_temp < N and 0 <= nuevo_y_temp < N and tablero[nuevo_x_temp][nuevo_y_temp] < 0:
                 tablero[nuevo_x_temp][nuevo_y_temp] += 1
-    #return True
+
 
 # Función recursiva de Backtracking
 def resolver_recorrido_caballo(x, y, movimiento, tablero):
@@ -119,13 +123,11 @@ def imprimir_tablero():
 
 # Configuración inicial
 tablero = generar_tablero(N)
-x_inicial, y_inicial = 0, 0
 tablero[x_inicial][y_inicial] = 1
-
 
 # Ejecución y medición de tiempo
 start_time = time.time()
-actualizar1erPosicionReturn(x_inicial,y_inicial)
+actualizar_return(x_inicial,y_inicial)
 
 if resolver_recorrido_caballo(x_inicial, y_inicial, tablero[x_inicial][y_inicial] + 1, tablero):
     solution_time = time.time() - start_time

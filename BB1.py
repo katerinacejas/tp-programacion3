@@ -1,14 +1,14 @@
 import time
 
 # Definimos el tamaño del tablero
-N = 21  # Cambia este valor para tableros de diferentes tamaños
+N = 10  # Cambia este valor para tableros de diferentes tamaños
+
+# Posición inicial del caballo
+x_inicial, y_inicial = 0, 0  # Cambia estas coordenadas según sea necesario
 
 # Movimientos posibles del caballo
 movimientos_x = [2, 1, -1, -2, -2, -1, 1, 2]
 movimientos_y = [1, 2, 2, 1, -1, -2, -2, -1]
-
-# Inicializamos el tablero con -1 para marcar que ninguna posición ha sido visitada
-tablero = [[-1 for _ in range(N)] for _ in range(N)]
 
 # Contador de pasos
 total_pasos = 0
@@ -82,8 +82,8 @@ def imprimir_tablero():
         print(' '.join(f'{x:2}' for x in fila))
     print()
 
-# Posición inicial del caballo (personalizable)
-x_inicial, y_inicial = 3, 8  # Cambia estas coordenadas según sea necesario
+# Inicializamos el tablero con -1 para marcar que ninguna posición ha sido visitada
+tablero = [[-1 for _ in range(N)] for _ in range(N)]
 tablero[x_inicial][y_inicial] = 0  # Marcamos la posición inicial
 
 # Iniciar timers
@@ -92,7 +92,7 @@ start_time = time.time()
 # Llamada a la función
 if resolver_recorrido_caballo(x_inicial, y_inicial, 1):
     solution_time = time.time() - start_time  # Tiempo hasta encontrar la solución
-    # imprimir_tablero_paso_a_paso()
+    print("Se encontró un recorrido válido.")
     imprimir_tablero()
 else:
     imprimir_tablero()

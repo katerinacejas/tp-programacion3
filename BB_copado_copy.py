@@ -1,5 +1,11 @@
 import time
 
+# Definimos el tamaño del tablero
+N = 8  # Cambia este valor para tableros de diferentes tamaños
+
+# Posición inicial del caballo
+x_inicial, y_inicial = 2, 0  # Cambia estas coordenadas según sea necesario
+
 # Función para generar el tablero con los valores específicos
 def generar_tablero(N):
     tablero = [[0] * N for _ in range(N)]
@@ -51,8 +57,6 @@ movimientos_y = [1, 2, 2, 1, -1, -2, -2, -1]
 
 # Variables de ejecución
 total_pasos = 0
-contador = 0
-N = 21  # Tamaño del tablero
 
 def contar_ceros(tablero):
     ceros = sum(fila.count(0) for fila in tablero)
@@ -71,7 +75,7 @@ def contar_movimientos_posibles(x, y):
 def es_movimiento_valido(x, y):
     return 0 <= x < N and 0 <= y < N and tablero[x][y] < 0
 
-def actualizar1erPosicionReturn(x, y):
+def actualizar_return(x, y):
     if 0 <= x < N and 0 <= y < N and tablero[x][y] < 0:
         for a in range(8):
             nuevo_x_temp = x + movimientos_x[a]
@@ -111,7 +115,7 @@ def resolver_recorrido_caballo(x, y, movimiento, tablero):
         tablerotemp = [fila[:] for fila in tablero]
         tablero[nuevo_x][nuevo_y] = movimiento  # Marcamos la posición con el número del movimiento
         #actualizar_return2(nuevo_x,nuevo_y,tablero)
-        actualizar1erPosicionReturn(nuevo_x,nuevo_y)
+        actualizar_return(nuevo_x,nuevo_y)
         if(contar_ceros(tablero)):
             tablero = [fila[:] for fila in tablerotemp]
             continue
@@ -132,12 +136,11 @@ def imprimir_tablero():
 
 # Configuración inicial
 tablero = generar_tablero(N)
-x_inicial, y_inicial = 3, 8
 tablero[x_inicial][y_inicial] = 1
 
 imprimir_tablero()
 
-actualizar1erPosicionReturn(x_inicial,y_inicial)
+actualizar_return(x_inicial,y_inicial)
 # Ejecución y medición de tiempo
 start_time = time.time()
 imprimir_tablero()

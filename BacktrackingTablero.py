@@ -63,7 +63,7 @@ def imprimir_tablero(tablero):
         print(' '.join(f'{x:2}' for x in fila))
     print()
 
-# Ejemplo para un tablero 8x8
+
 N = 4
 tablero = generar_tablero(N)
 print(f"Tablero {N}x{N} con valores negativos:")
