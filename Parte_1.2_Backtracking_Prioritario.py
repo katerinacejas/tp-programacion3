@@ -67,6 +67,7 @@ def resolver_recorrido_caballo(x, y, movimiento):
     movimientos_posibles.sort()  # Menor cantidad de opciones primero
     # Intentar cada movimiento en el orden determinado por la heurística
     for _, nuevo_x, nuevo_y in movimientos_posibles:
+        recorrido.append([(x, y), (nuevo_x, nuevo_y)])
         tablero[nuevo_x][nuevo_y] = movimiento  # Marcamos la posición con el número del movimiento
 
         if resolver_recorrido_caballo(nuevo_x, nuevo_y, movimiento + 1):
@@ -74,7 +75,7 @@ def resolver_recorrido_caballo(x, y, movimiento):
 
         # Backtracking: desmarcar la casilla
         tablero[nuevo_x][nuevo_y] = -1
-
+        recorrido.pop()
     return False
 
 def imprimir_tablero():
@@ -85,6 +86,7 @@ def imprimir_tablero():
 # Inicializamos el tablero con -1 para marcar que ninguna posición ha sido visitada
 tablero = [[-1 for _ in range(N)] for _ in range(N)]
 tablero[x_inicial][y_inicial] = 0  # Marcamos la posición inicial
+recorrido = []
 
 # Iniciar timers
 start_time = time.time()
@@ -94,6 +96,7 @@ if resolver_recorrido_caballo(x_inicial, y_inicial, 1):
     solution_time = time.time() - start_time  # Tiempo hasta encontrar la solución
     print("Se encontró un recorrido válido.")
     imprimir_tablero()
+    print(f"Este es el recorrido: {recorrido}" )
 else:
     imprimir_tablero()
     print("No se encontró un recorrido válido.")
