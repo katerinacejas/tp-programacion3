@@ -3,8 +3,10 @@ import csv
 
 import pandas as pd
 
-from Parte_1_Backtracking import KnightTourBacktracking
-from view.display_board import KnightTourVisualizer
+from src.Parte_1_Backtracking import KnightTourBacktracking
+
+from view.display_graph import mostrar_grafo
+from view.display_board import animate_knights_tour
 
 def displayBacktrackingSolution():
     board_size = 1
@@ -57,5 +59,12 @@ def empezar_pruebas(algoritmo):
 if __name__ == "__main__":
     data = pd.read_csv("csv_results/Backtracking_test_results.csv", sep=",", header=0)
     print(data)
-    empezar_pruebas(KnightTourBacktracking())
+    backtracking = KnightTourBacktracking(6)
+    if(backtracking.resolver_recorrido_caballo(0,0)):
+        recorrido = backtracking.get_recorrido()
+        print(recorrido)
+
+        animate_knights_tour(6,recorrido)
+    # empezar_pruebas(KnightTourBacktracking())
+    # empezar_pruebas(Parte_2_Branch_Bound())
     # displayBacktrackingSolution()

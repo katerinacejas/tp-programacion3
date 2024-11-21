@@ -16,7 +16,7 @@ class KnightTourBacktracking:
     y_inicial = 0
 
     def __init__(self, n = 3):
-        self.MAX_MULTIPLES_SOLUCIONES = 3
+        self.MAX_MULTIPLES_SOLUCIONES = 5
         self.N = n
         self.init_tablero()
 
@@ -41,7 +41,7 @@ class KnightTourBacktracking:
         self.x_inicial = x_inicial
         self.y_inicial = y_inicial
         self.recorrido = []
-        self.recorridos = [[] for _ in range(self.MAX_MULTIPLES_SOLUCIONES)]
+        self.recorridos = []
         self.tablero[x_inicial][y_inicial] = 0
 
     # Función recursiva de Backtracking
@@ -77,8 +77,8 @@ class KnightTourBacktracking:
             print(' '.join(f'{x:2}' for x in fila))
         print()
     #
-    def resolver_recorridos_caballo(self,x_inicial, y_inicial,movimiento=0,cantsoluciones=3):
-        if cantsoluciones > 3:
+    def resolver_varios_caminos_caballo(self,x_inicial, y_inicial,movimiento=0,cant_soluciones=3):
+        if cant_soluciones > 5 :
             raise ValueError("Ingrese maximo de 5 cant_soluciones ")
 
         if movimiento == 0:
@@ -88,9 +88,11 @@ class KnightTourBacktracking:
         self.total_pasos += 1  # Incrementamos el contador de pasos
 
         # Si el caballo ha visitado todas las casillas, hemos terminado
-        if len(self.recorridos) == self.N * self.N:
-            return True
-
+        if movimiento == self.N * self.N:
+            self.recorridos.append(self.recorrido)
+            if len(self.recorridos) == cant_soluciones:
+                return True
+            return False
         # Intentamos cada uno de los 8 posibles movimientos
         for i in range(8):
             nuevo_x = x_inicial + self.movimientos_x[i]
@@ -98,11 +100,10 @@ class KnightTourBacktracking:
 
             if self.es_movimiento_valido(nuevo_x, nuevo_y):
                 self.tablero[nuevo_x][nuevo_y] = movimiento  # Marcamos la posición con el número del movimiento
-                self.recorrido.append([(x_inicial, y_inicial), (nuevo_x, nuevo_y)])
-                if self.resolver_recorrido_caballo(nuevo_x, nuevo_y, movimiento + 1):
+                self.recorrido.append(((x_inicial, y_inicial), (nuevo_x, nuevo_y)))
+                if self.resolver_varios_caminos_caballo(nuevo_x, nuevo_y, movimiento + 1,cant_soluciones):
                     return True
 
-                # Backtracking: desmarcar la casilla
                 self.tablero[nuevo_x][nuevo_y] = -1
                 self.recorrido.pop()
         return False
@@ -114,3 +115,8 @@ class KnightTourBacktracking:
         if N < 3:
             raise ValueError('Size of board needs to be greater than N = 3.')
         self.N = N
+
+    def get_caminos(self):
+        return self.recorridos
+
+

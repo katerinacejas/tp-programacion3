@@ -1,71 +1,68 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib.animation import FuncAnimation
-from matplotlib.colors import Colormap
+from matplotlib import animation
 
+# Function to animate the Knight's Tour
+def animate_knights_tour(N, moves):
+    # Create the board
+    board = np.full((N, N), -1, dtype=int)
+    fig, ax = plt.subplots(figsize=(8, 8))
+    ax.set_xticks(np.arange(-0.5, N, 1))
+    ax.set_yticks(np.arange(-0.5, N, 1))
+    ax.set_xticklabels([])
+    ax.set_yticklabels([])
+    ax.grid(color='black', linestyle='-', linewidth=1)
+    ax.set_xlim(-0.5, N - 0.5)
+    ax.set_ylim(-0.5, N - 0.5)
+    plt.gca().invert_yaxis()  # Invert Y-axis to match chessboard coordinates
+    plt.title(f"Knight's Tour Animation on {N}x{N} Board", fontsize=16)
 
-class KnightTourVisualizer:
-    def __init__(self, board_size, knight_path):
-        self.knight_path = knight_path  # Guardar knight_path como atributo
-        self.board_size = board_size
-        self._setup_board()
+    # Draw the chessboard squares
+    for x in range(N):
+        for y in range(N):
+            color = 'white' if (x + y) % 2 == 0 else 'gray'
+            ax.add_patch(plt.Rectangle((y - 0.5, x - 0.5), 1, 1, color=color))
 
-    def _setup_board(self):
-        # Configurar el tablero
-        self.board = np.zeros([self.board_size, self.board_size], dtype=int)
-        self.fig, self.axis = plt.subplots()
+    # Plot elements
+    step_text = ax.text(0, -1, "", fontsize=12, color="blue", ha="left")
+    knight, = ax.plot([], [], 'ro', markersize=15)  # Knight's current position
+    path_lines, = ax.plot([], [], 'r-', linewidth=1)  # Path lines
 
-        self.axis.matshow(self.board,vmin=0,vmax=len(self.knight_path), cmap="Greys")
+    # Initialize the animation path
+    path_x, path_y = [], []
 
-        # Asignar algunos valores de ejemplo
+    def update(frame):
+        nonlocal path_x, path_y
 
+        # Get current move from the moves list
+        start, end = moves[frame]
 
-        self._setup_board_text()
+        # Update path lists
+        path_x.append(start[1])
+        path_y.append(start[0])
+        path_x.append(end[1])
+        path_y.append(end[0])
 
-    def _setup_board_text(self):
-        for i in range(len(self.knight_path)):
-            self.board[self.knight_path[i]] = i + 1
-            for j in range(len(self.board)):
-                self.axis.text(i, j, str(self.board[i, j]), ha="center", va="center")
-                print(self.board[i, j])  # Este print puede ser removido si no es necesario
+        # Update knight's position
+        knight.set_data([end[1]], [end[0]])  # Ensure x, y are sequences
 
-# Uso del código
-# knight_tour_visualizer = KnightTourVisualizer(8, [(0, 0), (1, 2), (2, 0)])
-# knight_tour_visualizer.show()
+        # Update path lines (the red line tracking the knight)
+        path_lines.set_data(path_x, path_y)
 
-    #
-    # # Función para configurar la animación
-    # def setup_plot(self):
-    #     self.board.fill(0)  # Limpiar el tablero inicial
-    #     self.im.set_array(self.board)
-    #     return [self.im]
-    #
-    # # Función para actualizar la posición del caballo en cada fotograma
-    # def update(self, frame):
-    #     x, y = self.knight_path[frame]  # Actualizar la posición del caballo
-    #
-    #     if 0 <= x < self.board_size and 0 <= y < self.board_size:
-    #         self.board[x, y] = frame + 1# Marcar la posición actual del caballo
-    #         self.im.set_array(self.board)
-    #         self.axis.set_title(f"Move {frame + 1}: Position ({x}, {y})")
-    #
-    #     return [self.im]
+        # Update step count text
+        step_text.set_text(f"Step {frame + 1}/{len(moves)}")
 
-    def show(self):
-        # animation = FuncAnimation(fig=self.fig,
-        #                           func=self.update,
-        #                           frames=len(self.knight_path),
-        #                           interval=100000,
-        #                           )
-        # animation.save("animation.gif")
-        plt.show()
+        # Return updated visual elements
+        return knight, path_lines, step_text
 
-
-# # Ejemplo de uso
-# if __name__ == "__main__":
-#     board_size = 5  # Tamaño del tablero
-#     x_inicial = 0
-#     y_inicial = 0
-#
-#     knight_tour_visualizer = KnightTourVisualizer(board_size,recorrido)
-#     knight_tour_visualizer.show()
+    # Animation call
+    ani = animation.FuncAnimation(
+        fig,
+        update,
+        frames=len(moves),
+        interval=500,
+        blit=False,  # Disable blit for compatibility
+        repeat=False
+    )
+    ani.save(f"knights_tour_size_{N}.gif")
+    plt.show()
