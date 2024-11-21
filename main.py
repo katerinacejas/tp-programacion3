@@ -55,7 +55,7 @@ def empezar_pruebas(algoritmo):
 
 
 if __name__ == "__main__":
-    data = pd.read_csv("results/Backtracking_test_results.csv", sep=",", header=0)
+    data = pd.read_csv("csv_results/Backtracking_test_results.csv", sep=",", header=0)
     print(data)
     empezar_pruebas(KnightTourBacktracking())
     # displayBacktrackingSolution()
